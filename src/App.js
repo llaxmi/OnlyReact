@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import { useQuery } from "react-query";
+import "./App.css";
 
-function App() {
+const App = () => {
+  //useQuery hook is used to fetch and manage data with REACT QUERY
+  const users = useQuery(
+    "users",
+    () => {
+      return fetch("https://jsonplaceholder.typicode.com/users").then((res) =>
+        res.json()
+      );
+    },
+    { enabled: false } //query disabled initially
+  );
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <button onClick={() => users.refetch()}>Load users</button>
+        <div>
+          {users.isFetching && <div>Fetching users...</div>}
+          {users.isError && <div>Error Fetching users!!!</div>}
+          {users.data &&
+            users.data.length > 0 &&
+            users.data.map((user) => (
+              <div className="listofusers" key={user.id}>
+                {user.name}
+              </div>
+            ))}
+        </div>
       </header>
     </div>
   );
-}
+};
 
 export default App;
